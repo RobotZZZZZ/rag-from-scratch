@@ -5,6 +5,9 @@ description = "rag-from-scratch"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+"bs4",
+"ipython",
+"ipykernel",
 "langchain",
 "langchain-openai",
 "langchain-anthropic",
