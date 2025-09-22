@@ -5,16 +5,18 @@ description = "rag-from-scratch"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-"bs4",
-"ipython",
-"ipykernel",
-"langchain",
-"langchain-openai",
-"langchain-anthropic",
-"langchain_community",
-"tiktoken",
-"chromadb",
-"langchainhub",
+    "bs4",
+    "ipython",
+    "ipykernel",
+    "langchain",
+    "langchain-openai",
+    "langchain-anthropic",
+    "langchain_community",
+    "tiktoken",
+    "chromadb",
+    "langchainhub",
+    "youtube-transcript-api>=1.2.2",
+    "pytube>=15.0.0",
 ]
 
 [project.optional-dependencies]
