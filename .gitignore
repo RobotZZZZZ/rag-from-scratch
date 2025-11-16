@@ -230,3 +230,5 @@ tmp/
 .cache/
 __pycache__/
 .ruff_cache/
+
+static/
