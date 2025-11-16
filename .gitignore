@@ -232,3 +232,5 @@ __pycache__/
 .ruff_cache/
 
 static/
+RetrievalTutorials-main/
+figures/
