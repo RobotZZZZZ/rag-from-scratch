@@ -1,9 +1,9 @@
 from langchain_core.prompts import ChatPromptTemplate
 import uuid
-from langchain.chat_models import ChatOpenAI
+from langchain.chat_models import init_chat_model
 import os
 from typing import Optional
-from langchain_core.pydantic_v1 import BaseModel
+from pydantic import BaseModel
 from langchain.chains import create_extraction_chain_pydantic
 from dotenv import load_dotenv
 
@@ -24,7 +24,13 @@ class AgenticChunker:
         if openai_api_key is None:
             raise ValueError("API key is not provided and not found in environment variables")
 
-        self.llm = ChatOpenAI(model=os.getenv("ARK_MODEL"), openai_api_key=openai_api_key, temperature=0)
+        self.llm = init_chat_model(
+            model_provider="openai",
+            model=os.getenv("ARK_MODEL"), 
+            base_url=os.getenv("ARK_API_URL"),
+            api_key=openai_api_key,
+            temperature=0
+        )
 
     def add_propositions(self, propositions):
         for proposition in propositions:
@@ -285,27 +291,22 @@ class AgenticChunker:
             ]
         )
 
-        runnable = PROMPT | self.llm
-
-        chunk_found = runnable.invoke({
-            "proposition": proposition,
-            "current_chunk_outline": current_chunk_outline
-        }).content
-
         # Pydantic data class
         class ChunkID(BaseModel):
             """Extracting the chunk id"""
             chunk_id: Optional[str]
-            
-        # Extraction to catch-all LLM responses. This is a bandaid
-        extraction_chain = create_extraction_chain_pydantic(pydantic_schema=ChunkID, llm=self.llm)
-        extraction_found = extraction_chain.run(chunk_found)
-        if extraction_found:
-            chunk_found = extraction_found[0].chunk_id
+        
+        runnable = PROMPT | self.llm.with_structured_output(ChunkID)
+        chunk_found = runnable.invoke({
+            "proposition": proposition,
+            "current_chunk_outline": current_chunk_outline
+        })
+        if chunk_found:
+            chunk_found = chunk_found.chunk_id
 
         # If you got a response that isn't the chunk id limit, chances are it's a bad response or it found nothing
         # So return nothing
-        if len(chunk_found) != self.id_truncate_limit:
+        if chunk_found and len(chunk_found) != self.id_truncate_limit:
             return None
 
         return chunk_found
