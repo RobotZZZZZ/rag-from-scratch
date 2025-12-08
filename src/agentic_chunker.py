@@ -73,7 +73,7 @@ class AgenticChunker:
 
     def _update_chunk_summary(self, chunk):
         """
-        添加新的陈述后，对chunk进行总结，更新chunk的summary。summary应该概括chunk的内容，给出添加新陈述的建议。
+        添加新的陈述后，对chunk进行总结，更新chunk的summary。summary应该概括chunk的内容，便于后续添加新陈述进行比较。
         If you add a new proposition to a chunk, you may want to update the summary or else they could get stale
         """
         PROMPT = ChatPromptTemplate.from_messages(
